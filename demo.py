@@ -1,98 +1,70 @@
-import json
+import pystray
+from PIL import Image
 import subprocess
-from infi.systray import SysTrayIcon
-
-# Windows 隐藏 CMD 窗口的特定标志
-CREATE_NO_WINDOW = 0x08000000
-
-
-class ServiceManager:
-    """负责管理 CLI 子进程"""
-
-    def __init__(self, main_command):
-        self.main_command = main_command
-        self.process = None
-
-    def start(self):
-        if self.process and self.process.poll() is None:
-            return  # 已经在运行
-
-        # 隐藏黑框启动
-        self.process = subprocess.Popen(
-            self.main_command,
-            shell=True,
-            creationflags=CREATE_NO_WINDOW,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-        )
-
-    def stop(self):
-        if self.process and self.process.poll() is None:
-            self.process.kill()
-            self.process = None
-
-    def run_custom(self, cmd):
-        subprocess.run(cmd, shell=True, creationflags=CREATE_NO_WINDOW)
+import json
 
 
 class TrayApp:
-    def __init__(self, config_file, icon_path):
-        # 1. 加载配置
+    def __init__(self, config_file):
         with open(config_file, 'r', encoding='utf-8') as f:
             self.config = json.load(f)
 
-        self.service = ServiceManager(self.config["main_command"])
-        self.icon_path = icon_path
+        self.status = "stopped"
+        self.icon = pystray.Icon("Manager",
+                                 Image.open(self.config["icon_path"]),
+                                 self.config["app_name"])
 
-        # 2. 将 JSON 配置解析为 infi.systray 需要的元组列表
-        menu_options = self._build_menu_from_config()
+        # 预定义回调字典，这样 MenuItem 就只绑定明确的方法名
+        self.icon.menu = self._build_menu()
 
-        # 3. 初始化托盘对象 (图标路径, 悬浮提示文字, 菜单选项)
-        self.systray = SysTrayIcon(
-            self.icon_path,
-            self.config["app_name"],
-            menu_options,
-            on_quit=self._on_quit  # 绑定默认的退出事件
-        )
-
-    def _build_menu_from_config(self):
-        """将配置列表映射为 infi.systray 的菜单元组: (菜单文本, 图标路径(可为None), 回调函数)"""
-        menu_options = []
-
+    def _build_menu(self):
+        menu_items = []
         for item in self.config["menu_items"]:
-            action_type = item.get("action")
-            label = item.get("label")
+            if item["condition"] == "always" or eval(item["condition"], {"status": self.status}):
+                # 2. 这里不使用闭包，而是根据 action 名字动态指向一个特定的方法
+                # 将 action 名称存入菜单项的 text 中，或者创建一个唯一的名称方法
+                action_name = item["action"]
+                action_type = item["type"]
 
-            # infi.systray 不原生支持单独的分隔符，通常用空或者略过，这里我们略过分隔符配置
-            if action_type == "separator":
-                continue
+                # 创建一个具名的方法，名字由 action 决定
+                # 这样 pystray 看到的就是一个标准的 def func(icon, item)
+                handler = self._create_handler(action_type, action_name)
+                menu_items.append(pystray.MenuItem(item["label"], handler))
 
-            # 这里依然需要使用默认参数来固定闭包中的 action 和 cmd
-            def callback(systray_obj, action=action_type, cmd=item.get("cmd")):
-                if action == "start_main":
-                    self.service.start()
-                elif action == "stop_main":
-                    self.service.stop()
-                elif action == "run_custom":
-                    self.service.run_custom(cmd)
+        return pystray.Menu(*menu_items)
 
-            # 组装元组: (显示文本, 菜单项图标(不需要填None), 回调)
-            menu_options.append((label, None, callback))
+    def _create_handler(self, action_type, action_name):
+        def handler(icon, item):
+            try:
+                if action_type == "cmd":
+                    subprocess.Popen(action_name, shell=True, creationflags=0x08000000)
+                elif action_type == "func":
+                    getattr(self, action_name)()
+            except Exception as e:
+                print(f"执行出错: {e}")
 
-        return tuple(menu_options)  # infi.systray 要求是 tuple 或 list
+            # 更新状态
+            self._update_status()
+            self.icon.menu = self._build_menu()
 
-    def _on_quit(self, systray_obj):
-        """右键菜单自带一个 Quit 选项，退出前确保杀掉服务"""
-        self.service.stop()
+        return handler
+
+    def _update_status(self):
+        res = subprocess.getoutput('tasklist | findstr notepad.exe')
+        self.status = "running" if "notepad.exe" in res else "stopped"
+        self.icon.icon = Image.new('RGB', (64, 64), color='green' if self.status == 'running' else 'gray')
+
+    # --- 具体的业务逻辑 ---
+    def check_health(self):
+        print("执行健康检查...")
+
+    def exit_app(self):
+        self.icon.stop()
 
     def run(self):
-        # 启动时自动运行服务
-        self.service.start()
-        # 启动托盘 (阻塞当前线程，直到退出)
-        self.systray.start()
+        self.icon.run()
 
 
 if __name__ == "__main__":
-    # 请确保同级目录下有一个 app.ico 文件，否则会报错
-    app = TrayApp("config.json", "app.ico")
+    app = TrayApp("config.json")
     app.run()
