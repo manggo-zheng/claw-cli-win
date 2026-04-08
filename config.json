@@ -1,30 +1,31 @@
 {
-    "app_name": "CLI Task Manager",
-    "icon_path": "gray.ico",
+    "app_name": "CLI 高级管理器",
+    "monitor_interval": 2,
+    "status_check": {
+        "cmd": "echo Status: Active",
+        "regex": "Status:\\s*(\\w+)",
+        "mapping": {
+            "Active": "running",
+            "Inactive": "stopped"
+        }
+    },
     "menu_items": [
         {
-            "label": "启动记事本服务",
-            "type": "cmd",
-            "action": "start notepad.exe",
+            "label": "当前系统状态: [%status%]",
+            "type": "text",
+            "condition": "always"
+        },
+        {
+            "label": "执行启动脚本",
+            "type": "button",
+            "action": "echo Starting...",
             "condition": "status == 'stopped'"
         },
         {
-            "label": "停止记事本服务",
-            "type": "cmd",
-            "action": "taskkill /f /im notepad.exe",
+            "label": "执行停止脚本",
+            "type": "button",
+            "action": "echo Stopping...",
             "condition": "status == 'running'"
-        },
-        {
-            "label": "检查健康状态",
-            "type": "func",
-            "action": "check_health",
-            "condition": "always"
-        },
-        {
-            "label": "退出",
-            "type": "func",
-            "action": "exit_app",
-            "condition": "always"
         }
     ]
 }

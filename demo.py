@@ -2,6 +2,9 @@ import pystray
 from PIL import Image
 import subprocess
 import json
+import threading
+import time
+import re  # 导入正则模块
 
 
 class TrayApp:
@@ -10,56 +13,76 @@ class TrayApp:
             self.config = json.load(f)
 
         self.status = "stopped"
-        self.icon = pystray.Icon("Manager",
-                                 Image.open(self.config["icon_path"]),
-                                 self.config["app_name"])
+        self.icon = pystray.Icon(
+            "Manager",
+            self._create_image("gray"),
+            self.config["app_name"],
+            menu=pystray.Menu(lambda: self._menu_factory())
+        )
 
-        # 预定义回调字典，这样 MenuItem 就只绑定明确的方法名
-        self.icon.menu = self._build_menu()
+        self.running = True
+        threading.Thread(target=self._monitor_loop, daemon=True).start()
 
-    def _build_menu(self):
-        menu_items = []
+    def _create_image(self, color):
+        return Image.new('RGB', (64, 64), color=color)
+
+    def _get_status_via_regex(self):
+        """核心逻辑：运行命令并用正则解析结果"""
+        cfg = self.config["status_check"]
+        try:
+            # 1. 执行检测命令
+            output = subprocess.getoutput(cfg["cmd"])
+
+            # 2. 正则匹配
+            # 使用 search 查找整个输出文本
+            match = re.search(cfg["regex"], output)
+
+            if match:
+                # 获取第一个捕获组的值 (即 \w+ 匹配到的部分)
+                raw_value = match.group(1)
+
+                # 3. 根据映射表转换状态
+                # mapping.get(raw_value, "stopped") 表示如果没搜到对应映射，默认停止
+                return cfg["mapping"].get(raw_value, "stopped")
+
+            return "stopped"  # 没匹配到正则，认为没运行
+        except Exception as e:
+            print(f"检测出错: {e}")
+            return "stopped"
+
+    def _monitor_loop(self):
+        interval = self.config.get("monitor_interval", 2)
+        print(f"[*] 正则监控已启动，命令: {self.config['status_check']['cmd']}")
+
+        while self.running:
+            # 调用正则提取函数
+            new_status = self._get_status_via_regex()
+
+            if new_status != self.status:
+                print(f"\n[!] 状态变更 (正则提取): {self.status} -> {new_status}")
+                self.status = new_status
+                self.icon.icon = self._create_image("green" if self.status == "running" else "gray")
+
+            time.sleep(interval)
+
+    def _menu_factory(self):
+        items = []
         for item in self.config["menu_items"]:
+            label = item["label"].replace("%status%", self.status)
             if item["condition"] == "always" or eval(item["condition"], {"status": self.status}):
-                # 2. 这里不使用闭包，而是根据 action 名字动态指向一个特定的方法
-                # 将 action 名称存入菜单项的 text 中，或者创建一个唯一的名称方法
-                action_name = item["action"]
-                action_type = item["type"]
+                if item.get("type") == "text":
+                    items.append(pystray.MenuItem(label, lambda: None, enabled=False))
+                else:
+                    handler = self._create_handler(item["action"])
+                    items.append(pystray.MenuItem(label, handler))
+        return items
 
-                # 创建一个具名的方法，名字由 action 决定
-                # 这样 pystray 看到的就是一个标准的 def func(icon, item)
-                handler = self._create_handler(action_type, action_name)
-                menu_items.append(pystray.MenuItem(item["label"], handler))
-
-        return pystray.Menu(*menu_items)
-
-    def _create_handler(self, action_type, action_name):
+    def _create_handler(self, action):
         def handler(icon, item):
-            try:
-                if action_type == "cmd":
-                    subprocess.Popen(action_name, shell=True, creationflags=0x08000000)
-                elif action_type == "func":
-                    getattr(self, action_name)()
-            except Exception as e:
-                print(f"执行出错: {e}")
-
-            # 更新状态
-            self._update_status()
-            self.icon.menu = self._build_menu()
+            print(f"[*] 执行: {action}")
+            subprocess.Popen(action, shell=True, creationflags=0x08000000)
 
         return handler
-
-    def _update_status(self):
-        res = subprocess.getoutput('tasklist | findstr notepad.exe')
-        self.status = "running" if "notepad.exe" in res else "stopped"
-        self.icon.icon = Image.new('RGB', (64, 64), color='green' if self.status == 'running' else 'gray')
-
-    # --- 具体的业务逻辑 ---
-    def check_health(self):
-        print("执行健康检查...")
-
-    def exit_app(self):
-        self.icon.stop()
 
     def run(self):
         self.icon.run()

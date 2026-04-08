@@ -1,0 +1,30 @@
+{
+    "app_name": "CLI Task Manager",
+    "icon_path": "gray.ico",
+    "menu_items": [
+        {
+            "label": "启动记事本服务",
+            "type": "cmd",
+            "action": "start notepad.exe",
+            "condition": "status == 'stopped'"
+        },
+        {
+            "label": "停止记事本服务",
+            "type": "cmd",
+            "action": "taskkill /f /im notepad.exe",
+            "condition": "status == 'running'"
+        },
+        {
+            "label": "检查健康状态",
+            "type": "func",
+            "action": "check_health",
+            "condition": "always"
+        },
+        {
+            "label": "退出",
+            "type": "func",
+            "action": "exit_app",
+            "condition": "always"
+        }
+    ]
+}
