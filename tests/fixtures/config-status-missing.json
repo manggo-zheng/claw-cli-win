@@ -1,0 +1,10 @@
+{
+  "service": {
+    "start": {
+      "args": ["python", "-V"]
+    },
+    "status": {
+      "mode": "command"
+    }
+  }
+}

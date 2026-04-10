@@ -1,21 +1,28 @@
 {
-    "app_name": "测试服务管理器",
-    "main_command": "ping 127.0.0.1 -n 100",
-    "menu_items": [
-        {
-            "label": "点击打印: Hello World",
-            "action": "run_custom",
-            "cmd": "echo 这是一个测试，运行成功！ & pause"
-        },
-        {
-            "label": "打开系统计算器",
-            "action": "run_custom",
-            "cmd": "calc.exe"
-        },
-        {
-            "label": "显示服务进程PID",
-            "action": "run_custom",
-            "cmd": "echo 检查后台进程中... & tasklist | findstr ping & pause"
-        }
-    ]
+  "app_name": "Sample Ping Tray",
+  "service": {
+    "auto_start": true,
+    "shutdown_timeout_seconds": 3,
+    "start": {
+      "args": ["ping", "127.0.0.1", "-t"],
+      "shell": false,
+      "hide_window": true
+    },
+    "status": {
+      "mode": "managed_process",
+      "refresh_interval_seconds": 2,
+      "labels": {
+        "running": "运行中",
+        "stopped": "已停止",
+        "failed": "异常退出",
+        "unknown": "未知"
+      }
+    }
+  },
+  "menu_items": [
+    { "type": "status", "label": "示例服务: {service_label}" },
+    { "type": "service_action", "label": "停止", "action": "stop", "visible_when": { "states_in": ["running", "starting", "stopping"] } },
+    { "type": "service_action", "label": "启动", "action": "start", "visible_when": { "states_in": ["stopped", "failed", "unknown"] } },
+    { "type": "app_action", "label": "退出", "action": "exit" }
+  ]
 }

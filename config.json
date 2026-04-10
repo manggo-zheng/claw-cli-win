@@ -1,31 +1,87 @@
 {
-    "app_name": "CLI 高级管理器",
-    "monitor_interval": 2,
-    "status_check": {
-        "cmd": "echo Status: Active",
-        "regex": "Status:\\s*(\\w+)",
-        "mapping": {
-            "Active": "running",
-            "Inactive": "stopped"
-        }
+  "app_name": "OpenClaw Tray",
+  "tooltip_template": "{app_name} | {service_label}",
+  "icons": {
+    "size": 64,
+    "colors": {
+      "running": "#2e8b57",
+      "stopped": "#7f8c8d",
+      "failed": "#c0392b",
+      "starting": "#d4ac0d",
+      "stopping": "#d35400",
+      "unknown": "#34495e"
+    }
+  },
+  "service": {
+    "auto_start": true,
+    "shutdown_timeout_seconds": 5,
+    "start": {
+      "args": ["openclaw", "serve", "--config", ".\\openclaw.toml"],
+      "shell": false,
+      "hide_window": true,
+      "cwd": "."
     },
-    "menu_items": [
-        {
-            "label": "当前系统状态: [%status%]",
-            "type": "text",
-            "condition": "always"
-        },
-        {
-            "label": "执行启动脚本",
-            "type": "button",
-            "action": "echo Starting...",
-            "condition": "status == 'stopped'"
-        },
-        {
-            "label": "执行停止脚本",
-            "type": "button",
-            "action": "echo Stopping...",
-            "condition": "status == 'running'"
-        }
-    ]
+    "status": {
+      "mode": "managed_process",
+      "refresh_interval_seconds": 2,
+      "labels": {
+        "running": "运行中",
+        "stopped": "已停止",
+        "failed": "异常退出",
+        "starting": "启动中",
+        "stopping": "停止中",
+        "unknown": "未知"
+      }
+    }
+  },
+  "commands": {
+    "update_service": {
+      "args": ["openclaw", "self-update"],
+      "shell": false,
+      "hide_window": true,
+      "wait": true,
+      "cwd": "."
+    },
+    "open_dashboard": {
+      "command": "start http://127.0.0.1:3000",
+      "shell": true,
+      "hide_window": true,
+      "wait": false
+    }
+  },
+  "menu_items": [
+    { "type": "status", "label": "服务状态: {service_label}" },
+    { "type": "text", "label": "PID: {service_pid}" },
+    {
+      "type": "service_action",
+      "label": "启动服务",
+      "action": "start",
+      "visible_when": { "states_in": ["stopped", "failed", "unknown"] }
+    },
+    {
+      "type": "service_action",
+      "label": "停止服务",
+      "action": "stop",
+      "visible_when": { "states_in": ["starting", "running", "stopping"] }
+    },
+    {
+      "type": "service_action",
+      "label": "重启服务",
+      "action": "restart",
+      "visible_when": { "states_in": ["running"] }
+    },
+    { "type": "separator" },
+    {
+      "type": "command",
+      "label": "更新服务",
+      "command_ref": "update_service"
+    },
+    {
+      "type": "command",
+      "label": "打开面板",
+      "command_ref": "open_dashboard"
+    },
+    { "type": "app_action", "label": "刷新状态", "action": "refresh" },
+    { "type": "app_action", "label": "退出", "action": "exit" }
+  ]
 }

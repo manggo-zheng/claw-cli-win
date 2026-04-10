@@ -1,30 +1,37 @@
 {
-    "app_name": "CLI Task Manager",
-    "icon_path": "gray.ico",
-    "menu_items": [
-        {
-            "label": "启动记事本服务",
-            "type": "cmd",
-            "action": "start notepad.exe",
-            "condition": "status == 'stopped'"
-        },
-        {
-            "label": "停止记事本服务",
-            "type": "cmd",
-            "action": "taskkill /f /im notepad.exe",
-            "condition": "status == 'running'"
-        },
-        {
-            "label": "检查健康状态",
-            "type": "func",
-            "action": "check_health",
-            "condition": "always"
-        },
-        {
-            "label": "退出",
-            "type": "func",
-            "action": "exit_app",
-            "condition": "always"
-        }
-    ]
+  "app_name": "Command Status Tray",
+  "service": {
+    "auto_start": true,
+    "shutdown_timeout_seconds": 3,
+    "start": {
+      "args": ["python", "-m", "http.server", "8765"],
+      "shell": false,
+      "hide_window": true
+    },
+    "status": {
+      "mode": "command",
+      "refresh_interval_seconds": 2,
+      "command": {
+        "command": "powershell -NoProfile -Command \"$r = Test-NetConnection 127.0.0.1 -Port 8765 -WarningAction SilentlyContinue; if ($r.TcpTestSucceeded) { 'running' } else { 'stopped' }\"",
+        "shell": true,
+        "hide_window": true,
+        "wait": true
+      },
+      "mapping": {
+        "running": "running",
+        "stopped": "stopped"
+      },
+      "labels": {
+        "running": "端口正常",
+        "stopped": "端口未监听",
+        "failed": "检测失败"
+      }
+    }
+  },
+  "menu_items": [
+    { "type": "status", "label": "HTTP 服务: {service_label}" },
+    { "type": "service_action", "label": "重启", "action": "restart", "visible_when": { "states_in": ["running"] } },
+    { "type": "app_action", "label": "刷新状态", "action": "refresh" },
+    { "type": "app_action", "label": "退出", "action": "exit" }
+  ]
 }
