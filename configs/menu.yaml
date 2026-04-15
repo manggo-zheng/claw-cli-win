@@ -1,0 +1,58 @@
+# ==========================================
+# 菜单分组配置
+# 数组外层代表组，会自动在组之间插入分割线
+# ==========================================
+
+# ==========================================
+# 菜单分组配置
+# ==========================================
+
+groups:
+  - - id: "start"
+      icon: "start"
+      text: "开始"
+      action: "cmd_start"
+      enabled_in: [ "stopped" ]
+      cmd: "gateway.cmd"
+
+    - id: "stop"
+      icon: "stop"
+      text: "暂停"
+      action: "cmd_stop"
+      enabled_in: [ "running" ]
+
+    - id: "restart"
+      icon: "restart"
+      text: "重启"
+      action: "cmd_restart"
+      enabled_in: [ "running" ]
+
+    - id: "update"
+      icon: "update"
+      text: "更新"
+      action: "cmd_default"
+      enabled_in: [ "all" ]
+      cmd: "update_app.bat"
+
+  # 第二组：界面与设置
+  - - id: "status"
+      icon: "status"
+      text: "仪表板"
+      action: "cmd_default"
+      enabled_in: [ "running" ]
+      cmd: "show_web_window.bat"
+
+    - id: "settings"
+      icon: "settings"
+      text: "配置文件"
+      action: "cmd_default"
+      enabled_in: [ "all" ]
+      cmd: "settings.bat"
+
+  # 第三组：退出
+  - - id: "exit"
+      icon: "exit"
+      text: "退出"
+      is_exit: true
+      action: "cmd_exit"
+      enabled_in: [ "all" ]

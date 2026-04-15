@@ -1,2 +1,5 @@
-Pillow>=10.0.0
-pystray>=0.19.5
+PyQt6
+PyYAML
+psutil
+Pillow
+pystray

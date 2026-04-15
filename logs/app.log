@@ -1,0 +1,35 @@
+2026-04-15 16:58:31,382 - WARNING - 未找到绑定的动作方法: cmd_update
+2026-04-15 16:58:31,428 - INFO - Open Claw Manager 启动成功，托盘图标已加载。
+2026-04-15 16:58:39,983 - INFO - Manager 已正常退出。
+2026-04-15 17:01:09,104 - WARNING - 未找到绑定的动作方法: cmd_update
+2026-04-15 17:01:09,158 - INFO - Open Claw Manager 启动成功，托盘图标已加载。
+2026-04-15 17:06:49 [WARNING ] OpenClaw - build_ui_from_config:174 - 未找到绑定的动作方法: cmd_update
+2026-04-15 17:06:49 [INFO    ] OpenClaw - __init__:284 - Open Claw Manager 启动成功，托盘图标已加载。
+2026-04-15 17:14:13 [INFO    ] OpenClaw - cmd_exit:244 - Manager 已正常退出。
+2026-04-15 17:14:19 [INFO    ] OpenClaw - __init__:284 - Open Claw Manager 启动成功，托盘图标已加载。
+2026-04-15 17:14:24 [INFO    ] OpenClaw - start_process:62 - 已启动进程 [gateway.cmd], PID: 15952
+2026-04-15 17:14:46 [INFO    ] OpenClaw - cmd_default:255 - 执行独立工具 [仪表板]: show_web_window.bat
+2026-04-15 17:15:24 [INFO    ] OpenClaw - cmd_default:255 - 执行独立工具 [仪表板]: show_web_window.bat
+2026-04-15 17:16:03 [INFO    ] OpenClaw - cmd_default:255 - 执行独立工具 [仪表板]: show_web_window.bat
+2026-04-15 17:23:22 [INFO    ] OpenClaw - cmd_exit:242 - 退出前拦截：正在清理运行中的后台服务...
+2026-04-15 17:23:22 [INFO    ] OpenClaw - stop_process:73 - 准备结束进程树, PID: 15952
+2026-04-15 17:23:22 [INFO    ] OpenClaw - stop_process:81 - 进程树清理完毕。
+2026-04-15 17:23:22 [INFO    ] OpenClaw - cmd_exit:244 - Manager 已正常退出。
+2026-04-15 17:23:28 [INFO    ] OpenClaw - __init__:306 - Open Claw Manager 启动成功，托盘图标已加载。
+2026-04-15 17:23:37 [INFO    ] OpenClaw - start_process:73 - 已启动进程 [gateway.cmd], PID: 39428
+2026-04-15 17:23:47 [INFO    ] OpenClaw - cmd_default:261 - 执行独立工具 [仪表板]: show_web_window.bat
+2026-04-15 17:24:03 [INFO    ] OpenClaw - cmd_default:261 - 执行独立工具 [仪表板]: show_web_window.bat
+2026-04-15 17:25:20 [INFO    ] OpenClaw - __init__:284 - Open Claw Manager 启动成功，托盘图标已加载。
+2026-04-15 17:25:23 [INFO    ] OpenClaw - start_process:73 - 已启动进程 [gateway.cmd], PID: 30148
+2026-04-15 17:25:48 [INFO    ] OpenClaw - stop_process:84 - 准备结束进程树, PID: 30148
+2026-04-15 17:25:48 [INFO    ] OpenClaw - stop_process:92 - 进程树清理完毕。
+2026-04-15 17:25:54 [INFO    ] OpenClaw - start_process:73 - 已启动进程 [gateway.cmd], PID: 23520
+2026-04-15 17:27:51 [INFO    ] OpenClaw - cmd_default:255 - 执行独立工具 [仪表板]: show_web_window.bat
+2026-04-15 17:29:06 [INFO    ] OpenClaw - cmd_default:255 - 执行独立工具 [仪表板]: show_web_window.bat
+2026-04-15 17:54:15 [INFO    ] OpenClaw - __init__:284 - Open Claw Manager 启动成功，托盘图标已加载。
+2026-04-15 17:54:22 [INFO    ] OpenClaw - start_process:73 - 已启动进程 [gateway.cmd], PID: 6012
+2026-04-15 17:55:24 [INFO    ] OpenClaw - cmd_exit:242 - 退出前拦截：正在清理运行中的后台服务...
+2026-04-15 17:55:24 [INFO    ] OpenClaw - stop_process:84 - 准备结束进程树, PID: 6012
+2026-04-15 17:55:24 [INFO    ] OpenClaw - stop_process:92 - 进程树清理完毕。
+2026-04-15 17:55:24 [INFO    ] OpenClaw - cmd_exit:244 - Manager 已正常退出。
+2026-04-15 17:57:04 [INFO    ] OpenClaw - __init__:284 - Open Claw Manager 启动成功，托盘图标已加载。

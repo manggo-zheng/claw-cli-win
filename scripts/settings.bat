@@ -1,0 +1,1 @@
+start %USERPROFILE%\.openclaw\openclaw.json

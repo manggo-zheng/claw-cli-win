@@ -1,0 +1,1 @@
+openclaw update --no-restart

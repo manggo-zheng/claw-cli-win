@@ -1,9 +1,0 @@
-{
-  "app_name": "fixture",
-  "service": {
-    "start": {
-      "args": ["python", "-V"],
-      "cwd": ".\\service"
-    }
-  }
-}
