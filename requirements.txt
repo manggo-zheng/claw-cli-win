@@ -1,5 +1,3 @@
 PyQt6
 PyYAML
-psutil
-Pillow
-pystray
+cryptography

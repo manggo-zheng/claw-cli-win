@@ -9,7 +9,7 @@ import subprocess
 
 
 def build_project():
-    print("开始打包 Open Claw Manager...")
+    print("开始打包 anpi...")
 
     # 1. 定义 PyInstaller 打包命令
     # --noconsole: 隐藏背后的 CMD 黑窗口
@@ -21,7 +21,7 @@ def build_project():
         "--noconsole",
         "--noconfirm",
         "--icon=assets/anpi.ico",
-        "--name=OpenClawManager",
+        "--name=anpi",
         "--exclude-module=PyQt6.QtNetwork",
         "--exclude-module=PyQt6.QtQml",
         "--exclude-module=PyQt6.QtQuick",
@@ -54,7 +54,7 @@ def build_project():
     # 3. 打包完成后，整理目录
     print("\n编译完成，正在拷贝配置文件和依赖资源...")
 
-    dist_dir = os.path.join("dist", "OpenClawManager")
+    dist_dir = os.path.join("dist", "anpi")
 
     # 需要拷贝到 exe 同级目录的文件夹
     folders_to_copy = ["configs", "scripts", "assets"]

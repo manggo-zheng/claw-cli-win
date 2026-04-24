@@ -1,1 +1,1 @@
-openclaw dashboard
+powershell -Command "$token = (Get-Content '~\.openclaw\openclaw.json' | ConvertFrom-Json).gateway.auth.token; $url = 'http://127.0.0.1:18789/#token=' + $token; Start-Process $url"
